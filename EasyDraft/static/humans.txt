@@ -1,0 +1,7 @@
+/* Pontiflex Labs was started in 2012 by Matthew Conlen and Geoff Grauer */
+/* humanstxt.org */
+
+/* SITE */
+  Standards: HTML5, CSS3
+  Components: jQuery, Orbit, Reveal
+  Software: Coda, Textmate, Git

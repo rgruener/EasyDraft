@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    <div class="row">
+        <div class="twelve columns">
+            <h2>Create a SpamSir Account</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="six columns">
+            {% if not current_user.is_authenticated() %}
+                {% from "_formhelpers.html" import render_field %}
+                <form action="" method="post">{{ form.csrf_token }}
+                    <dl>
+                        {{ render_field(form.email) }}
+                        {{ render_field(form.password) }}
+                        {{ render_field(form.confirm) }}
+                    </dl>
+                    <input type="submit" value="Create Account" class="medium button" />
+                    <input type="hidden" name="next" value="{{ next|escape }}" />
+                </form>
+            {% else %}
+                <h4>You are already logged in. You must logout before creating a new account.</h4>
+            {% endif %}
+        </div>
+        <div class="size columns">
+        </div>
+    </div>
+{% endblock %}

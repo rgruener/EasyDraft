@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8" />
+
+	<!-- Set the viewport width to device width for mobile -->
+	<meta name="viewport" content="width=device-width" />
+
+    <title>{% block title %}SpamSir{% endblock %}</title>
+
+	<!-- Included CSS Files -->
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/foundation.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/style.css') }}">
+    {% endblock %}
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
+
+	<!--[>[> Included JS Files <]<]-->
+    {% block javascripts %}
+        <script src="{{ url_for('static', filename='javascripts/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='javascripts/modernizr.foundation.js') }}"></script>
+        <script src="{{ url_for('static', filename='javascripts/foundation.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='javascripts/jquery.foundation.tabs.js') }}"></script>
+        <script src="{{ url_for('static', filename='javascripts/app.js') }}"></script>
+        <script src="{{ url_for('static', filename='javascripts/processing-1.3.6.min.js') }}"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+        <script src="http://gsgd.co.uk/sandbox/jquery/easing/jquery.easing.1.3.js"></script>
+
+        <script>
+        </script>
+    {% endblock %}
+
+	<!--[if lt IE 9]>
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/ie.css') }}">
+	<![endif]-->
+
+
+	<!-- IE Fix for HTML5 Tags -->
+	<!--[if lt IE 9]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+    {% block extra_headers %}
+    {% endblock %}
+
+</head>
+<body>
+    {% block header %}{% include "header.html" %}{% endblock %}
+    <div class="container">
+        <div class="row content">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        {% block body %}{% endblock %}
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    {% block footer %}{% endblock %}
+    {% block modals %}
+        {% if current_user.is_authenticated() %}
+            <div id="myAccountModal" class="reveal-modal" style="top:200px; display:block;">
+                <dl class="tabs pill">
+                    <dd class="active"><a href="#pill1">Your Account</a></dd>
+                    <dd><a href="#pill2">Api Key</a></dd>
+                    <dd><a href="#pill3">Account Data</a></dd>
+                </dl>
+
+                <ul class="tabs-content">
+                    <li class="active" id="pill1Tab">
+                        <h5>Username: &nbsp;&nbsp; {{ current_user.email }}</h5>
+                        <h5>Password: &nbsp;&nbsp; ******* &nbsp;&nbsp;&nbsp;&nbsp; <a href="accounts/password/change/" class="button secondary small">Change Password</a></h5>
+                        <form action="/accounts/email/change/" method="post">
+                            <div class="two columns" style="padding:7px 0 0 0;">
+                                <label class="inline"><h5>Email:</h5></label>
+                            </div>
+                            <div class="six columns" style="padding:0 0 0 0;">
+                                <input name="email_address" class="inline" type="text" value="{{ current_user.email }}"/>
+                            </div>
+                            <div class="four columns">
+                                <input type="submit" class="button secondary small" value="Change Email"/>
+                            </div>
+                        </form>
+                    </li>
+                    <li id="pill2Tab">
+                        <h5>Secret Api Key: </h5>
+                    </li>
+                    <li id="pill3Tab">
+                    <h5>Tired of SpamSir?&nbsp;&nbsp;&nbsp;&nbsp;<a href="/accounts/delete/" class="button alert small">Delete Account</a></h5>
+                    <h5>Want to process your own data?&nbsp;&nbsp;&nbsp;&nbsp;<a href="/api/get/all/" class="button secondary small">Get Account Data</a></h5>
+                    </li>
+                </ul>
+
+                <a class="close-reveal-modal">&#215;</a>
+            </div>
+        {% endif %}
+    {% endblock %}
+</body>
+</html>

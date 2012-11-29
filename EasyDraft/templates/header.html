@@ -1,0 +1,35 @@
+<div id="header" >
+    <div class="container">
+		<div class="row">
+			<div class="four columns">
+				<a href="/">
+                    <img id="logo" src="{{ url_for('static', filename='images/logo.png') }}" \>
+				</a>
+			</div>
+            <div class="five columns">
+                <div id="labs">
+                    <i>Brought to you by <a href="http://labs.pontiflex.com">Pontiflex Labs</a></i>
+                </div>
+			</div>
+            <div class="three columns">
+                <div id="login" style="text-align:right;">
+                    {% if not current_user.is_authenticated() %}
+                        {% if next %} 
+                            <a href="/accounts/login/?next={{ next }}" class="medium secondary button">Login</a>
+                        {% else %}
+                            <a href="/accounts/login/?next={{ request.path }}" class="medium secondary button">Login</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="#" class="medium secondary button" data-reveal-id="myAccountModal">My Account</a>
+                        {% if request.path %}
+                            <i><h5 style="margin-top:6px;">Not {{ current_user.email }}? <a href="/accounts/logout/?next={{ request.path }}">Logout</a></h5></i>
+                        {% else %}
+                            <i><h5 style="margin-top:6px;">Not {{ current_user.email }}? <a href="/accounts/logout/?next=/accounts/login/?next=/">Logout</a></h5></i>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+		</div>
+	</div>
+</div>
+

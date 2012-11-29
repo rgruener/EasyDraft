@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    <div class="row">
+        <div class="twelve columns">
+            <h2>SpamSir Stats</h2>
+        </div>
+    </div>
+    {% if user.is_authenticated %}
+        <div class="row">
+            <div class="twelve columns">
+                <h3>Overall Stats</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns">
+                <table>
+                    <tr>
+                        <td><h4></h4></td>
+                        <td><h4>Average Spam Score</h4></td>
+                        <td><h4>Total Submissions</h4></td>
+                        <td><h4>Raw Spam Score</h4></td>
+                    </tr>
+                    <tr>
+                        <td><h4>{{ user.username }}:</h4></td>
+                        <td><h5>{{ user.get_profile.get_spam_report_average|default_if_none:"N/A" }}</h5></td>
+                        <td><h5>{{ user.get_profile.get_spam_report_submissions }}</h5></td>
+                        <td><h5>{{ user.get_profile.get_spam_report_raw_score|default_if_none:"N/A" }}</h5></td>
+                    </tr>
+                    <tr>
+                        <td><h4>All SpamSir Users:</h4></td>
+                        <td><h5>{{ total_stats.average|default_if_none:"N/A" }}</h5></td>
+                        <td><h5>{{ total_stats.total_submitted }}</h5></td>
+                        <td><h5>{{ total_stats.raw_score|default_if_none:"N/A" }}</h5></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns">
+                <h3>Recent Reports</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns">
+                <table>
+                    <tr>
+                        <td><h4>Report</h4></td>
+                        <td><h4>Report Score</h4></td>
+                        <td><h4>Report Date</h4></td>
+                        <td><h4>Tests Failed</h4></td>
+                    </tr>
+                    {% for report in user.get_profile.get_spam_reports %}
+                    <tr>
+                        <td><h4><a href="/reports/{{ report.id }}/">{{ report }}:</a></h4></td>
+                        <td><h5>{{ report.overall_score }}</h5></td>
+                        <td><h5>{{ report.report_date|date:"N j, Y , P" }}</h5></td>
+                        <td><h5>{{ report.spamtest_set.count }}</h5></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="twelve columns">
+                <h4>Please login for your personal spam statistics</h4>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

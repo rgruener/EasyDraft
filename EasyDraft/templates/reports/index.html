@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    <div class="row">
+        <div class="twelve columns">
+            <h2>SpamSir Report</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <table>
+                <tr>
+                    <td><h4>Email Subject:</h4></td>
+                    <td><h5>{{ report.email_subject }}</h5></td>
+                </tr>
+                <tr>
+                    <td><h4>Report Date:</h4></td>
+                    <td><h5>{{ report.report_date|date:"N j, Y , P" }}</h5></td>
+                </tr>
+                <tr>
+                    <td><h4>Report Score:</h4></td>
+                    <td><h5>{{ report.overall_score }}</h5></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <h3>Tests Failed</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <table>
+                <tr>
+                    <td><h4>Test Name</h4></td>
+                    <td><h4>Test Score</h4></td>
+                    <td><h4>Test Description</h4></td>
+                </tr>
+                {% for test in report.spamtest_set.all %}
+                <tr>
+                    <td><h5>{{ test.name }}</h5></td>
+                    <td><h5>{{ test.score }}</h5></td>
+                    <td><h5>{{ test.description }}</h5></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <h5>Note: Total of all test scores may not always add up to overall report score due to rounding error</h5>
+        </div>
+    </div>
+{% endblock %}
+

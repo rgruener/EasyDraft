@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    <div class="row">
+        <div class="twelve columns">
+            <h2>SpamSir Tests</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <table>
+                <tr>
+                    <td><h4>Test Name</h4></td>
+                    <td><h4>Test Score</h4></td>
+                    <td><h4>Test Description</h4></td>
+                </tr>
+                {% for test in tests %}
+                <tr>
+                    <td><h5><a href="/tests/{{ test.id }}/">{{ test.name }}</a></h5></td>
+                    <td><h5>{{ test.score }}</h5></td>
+                    <td><h5>{{ test.description }}</h5></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

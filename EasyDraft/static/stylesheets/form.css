@@ -1,0 +1,26 @@
+form label{
+    display: inline;
+}
+
+.gallery_container li{
+    margin-bottom: 0px;
+    float: left;
+    padding: 5px 10px;
+}
+
+input.input-text, textarea, select { display: inline; margin-bottom: 9px; }
+
+.upload-button{
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+.upload-box{
+    background-color: #000;
+    border: solid 1px #505050;
+    border-radius: 15px;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    max-width: 690px;
+}
