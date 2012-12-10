@@ -4,36 +4,28 @@
     {% include "navigation.html" %}
     <div class="row">
         <div class="twelve columns">
-            <h3>Don't Let Your Sent Emails End Up In A Spam Folder</h3>
+            <h3>Don't Fuss Organizing Your Next Fantasy Draft</h3>
         </div>
     </div>
     <div class="row">
         <div class="twelve columns">
-            <h4>SpamSir is a tool that returns a spam score for emails, making it possible 
-                to send smarter emails that are not misinterpreted to be spam.  In addition
-                to the spam score, SpamSir also returns a report of attributes that alter the
-                score allowing you to decide whether to send certain emails and how to improve
-                your score in the future.</h4>
+            <h4>EasyDraft is a tool that allows you to easily perform fantasy football
+                drafts with friends by keeping track of picks, displaying statistics, 
+                and more.  Therefore dont fuss with pencil and paper on your next draft
+                day.  Use our big board and have a draft both worth remembering and a
+                setup thats a breeze.</h4>
         </div>
     </div>
     <div class="row">
         <div class="twelve columns">
-            <h3>How to Use SpamSir</h3>
+            <h3>How to Use EasyDraft</h3>
         </div>
     </div>
     <div class="row">
         <div class="twelve columns">
-            <h4>In order to use SpamSir, you should <a href="/accounts/register/?next={{ request.path }}">create a SpamSir account</a> by going to the login
-                screen and selecting the new user option.  You don't need an account to receive
-                SpamSir reports however without using an account you do not have access to SpamSir's
-                wide range of built in statistics for your personal emails.<br/>
-                <br/>
-                Once you have an account or have decided that you're too cool to use our awesome
-                built in statistic reports, you can start using SpamSir by submitting a post request
-                to <a href="/api/submit/">spamsir.pontiflex.com/api/submit/</a> with the parameters:
-                'email' as the text email (preferably complete with email headers for full functionality), 'username',
-                and 'password'.  Upon processing the email you will receive a JSON object complete with spam score 
-                and the tests failed.  See the full documentation for further detail.
+            <h4>In order to use EasyDraft, you should <a href="{{ url_for('register', next=request.path) }}">create an EasyDraft account</a>.
+                Once you have an account you can <a href="{{ url_for('new_league') }}">start a new league</a>, setup your draft, and invite your friends over for draft day.  You can
+                view all of your current teams at any time to compare previous drafts and prepare for your next draft day victory.  
                 </h4>
         </div>
     </div>

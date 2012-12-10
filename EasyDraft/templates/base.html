@@ -11,7 +11,7 @@
 	<!-- Set the viewport width to device width for mobile -->
 	<meta name="viewport" content="width=device-width" />
 
-    <title>{% block title %}SpamSir{% endblock %}</title>
+    <title>{% block title %}EasyDraft{% endblock %}</title>
 
 	<!-- Included CSS Files -->
     {% block stylesheets %}
@@ -73,20 +73,19 @@
             <div id="myAccountModal" class="reveal-modal" style="top:200px; display:block;">
                 <dl class="tabs pill">
                     <dd class="active"><a href="#pill1">Your Account</a></dd>
-                    <dd><a href="#pill2">Api Key</a></dd>
-                    <dd><a href="#pill3">Account Data</a></dd>
+                    <dd><a href="#pill2">Account Data</a></dd>
                 </dl>
 
                 <ul class="tabs-content">
                     <li class="active" id="pill1Tab">
-                        <h5>Username: &nbsp;&nbsp; {{ current_user.email }}</h5>
-                        <h5>Password: &nbsp;&nbsp; ******* &nbsp;&nbsp;&nbsp;&nbsp; <a href="accounts/password/change/" class="button secondary small">Change Password</a></h5>
-                        <form action="/accounts/email/change/" method="post">
+                        <h5>Username: &nbsp;&nbsp; {{ current_user.username }}</h5>
+                        <h5>Password: &nbsp;&nbsp; ******* &nbsp;&nbsp;&nbsp;&nbsp; <a href="{{ url_for('change_pass') }}" class="button secondary small">Change Password</a></h5>
+                        <form action="{{ url_for('change_email') }}" method="post">
                             <div class="two columns" style="padding:7px 0 0 0;">
                                 <label class="inline"><h5>Email:</h5></label>
                             </div>
                             <div class="six columns" style="padding:0 0 0 0;">
-                                <input name="email_address" class="inline" type="text" value="{{ current_user.email }}"/>
+                                <input name="email" class="inline" type="text" value="{{ current_user.email }}"/>
                             </div>
                             <div class="four columns">
                                 <input type="submit" class="button secondary small" value="Change Email"/>
@@ -94,11 +93,10 @@
                         </form>
                     </li>
                     <li id="pill2Tab">
-                        <h5>Secret Api Key: </h5>
-                    </li>
-                    <li id="pill3Tab">
-                    <h5>Tired of SpamSir?&nbsp;&nbsp;&nbsp;&nbsp;<a href="/accounts/delete/" class="button alert small">Delete Account</a></h5>
-                    <h5>Want to process your own data?&nbsp;&nbsp;&nbsp;&nbsp;<a href="/api/get/all/" class="button secondary small">Get Account Data</a></h5>
+                    <h5>Tired of EasyDraft?&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('delete_account') }}" class="button alert small">Delete Account</a></h5>
+                    {% if current_user.username == 'rootuser' %}
+                    <h5>Want to update Players?&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('update_all_players', next=request.path) }}" class="button secondary small">Update Player List</a></h5>
+                    {% endif %}
                     </li>
                 </ul>
 

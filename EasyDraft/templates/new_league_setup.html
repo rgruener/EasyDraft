@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    <div class="row">
+        <div class="twelve columns">
+            {% if current_user.is_authenticated()  and league_name %}
+                <h3>Setup For League: {{ league_name }}</h3>
+                <h4>Before you can have your fantasy draft you must enter your League Settings</h4>
+                {% from "_formhelpers.html" import render_field, render_field_inline, render_requirement, render_2_fields_inline %}
+                <form action="" method="post" class="custom">{{ form.csrf_token }}
+                    <dl>
+                        <div class="row">
+                            <div class="six columns">
+                                <fieldset style="padding:12px;">
+                                    <legend>Team Information</legend>
+                                    {{ render_field_inline(form.num_teams, 'four', 'eight') }}
+                                    <div class="row">
+                                        <div class="two columns">
+                                            <h5>Team</h5>
+                                        </div>
+                                        <div class="five columns">
+                                            <h5>Team Name*</h5>
+                                        </div>
+                                        <div class="five columns">
+                                            <h5>EasyDraft Username</h5>
+                                        </div>
+                                    </div>
+                                    {{ render_2_fields_inline(form.team_1, form.team_1_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_2, form.team_2_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_3, form.team_3_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_4, form.team_4_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_5, form.team_5_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_6, form.team_6_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_7, form.team_7_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_8, form.team_8_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_9, form.team_9_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_10, form.team_10_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_11, form.team_11_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_12, form.team_12_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_13, form.team_13_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_14, form.team_14_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_15, form.team_15_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_16, form.team_16_user, '', 'Optional') }}
+
+                                </fieldset>
+                            </div>
+
+                            <div class="six columns">
+                                <fieldset style="padding:12px;"> 
+                                    <legend>Roster Requirements</legend>
+                                    {{ render_field_inline(form.roster_size, 'four', 'eight') }}
+                                    <div class="row">
+                                        <div class="four columns">
+                                            <h5>Position</h5>
+                                        </div>
+                                        <div class="four columns">
+                                            <h5>Starters*</h5>
+                                        </div>
+                                        <div class="four columns">
+                                            <h5>Max Number*</h5>
+                                        </div>
+                                    </div>
+                                    {{ render_requirement(form.start_qb, form.num_qb) }}
+                                    {{ render_requirement(form.start_rb, form.num_rb) }}
+                                    {{ render_requirement(form.start_wr, form.num_wr) }}
+                                    {{ render_requirement(form.start_te, form.num_te) }}
+                                    {{ render_requirement(form.start_k, form.num_k) }}
+                                    {{ render_requirement(form.start_def, form.num_def) }}
+                                </fieldset><br/>
+                                <input type="submit" value="Create League" class="medium button" />
+                            </div>
+                        </div>
+                    </dl>
+                </form>
+            {% else %}
+                <h4>Login and go to Start a New League to create a new league.</h4>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

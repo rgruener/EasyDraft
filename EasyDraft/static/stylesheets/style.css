@@ -63,12 +63,12 @@ h2, h3, h4, h5 {
 	position: fixed;
 	z-index: 99;
 	min-width: 500px;
-    border-bottom : solid 1px #505050;
-    background-color : whitesmoke;
+    border-bottom : solid 1px #111;
+    background-color : #777;
 }
 #logo {
     position: relative;
-    top: 5px;
+    top: 0px;
 }
 #login {
     position: relative;

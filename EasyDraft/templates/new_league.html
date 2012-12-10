@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    <div class="row">
+        <div class="six columns">
+            <h3>Start A New League Today</h3>
+            <h4>Planning to do an offline draft for your fantasy league this season? 
+                Start an EasyDraft league to set up your draft Today.</h4>
+            {% if current_user.is_authenticated() %}
+                {% from "_formhelpers.html" import render_field, render_field_inline %}
+                <form action="" method="post" class="custom">{{ form.csrf_token }}
+                    <dl>
+                        {{ render_field(form.league_name) }}
+                        {{ render_field_inline(form.pull_from_yahoo, 'five', 'seven') }}
+                        {{ render_field(form.yahoo_league_id) }}
+                    </dl>
+                    <input type="submit" value="League Setup" class="medium button" />
+                </form>
+            {% else %}
+                <h4>You are must login to create a new league.</h4>
+            {% endif %}
+        </div>
+        <div class="six columns">
+            <img src="{{ url_for('static', filename='images/fantasy_draft.jpg') }}" style="width:200%;"/>
+        </div>
+    </div>
+{% endblock %}

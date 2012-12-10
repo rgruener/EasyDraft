@@ -3,37 +3,39 @@ CREATE DATABASE IF NOT EXISTS EasyDraft;
 USE EasyDraft;
 
 
-CREATE TABLE IF NOT EXISTS Users ( email CHAR(50),
-                     password CHAR(30) NOT NULL,
-                     PRIMARY KEY (email) );
+CREATE TABLE IF NOT EXISTS Users ( username CHAR(20),
+                     email CHAR(50),
+                     password CHAR(50) NOT NULL,
+                     is_active BOOLEAN DEFAULT True,
+                     PRIMARY KEY (username) );
 
-CREATE TABLE IF NOT EXISTS Leagues (  league_id INTEGER,
+CREATE TABLE IF NOT EXISTS Leagues (  league_id INTEGER AUTO_INCREMENT,
                         league_name CHAR(20) NOT NULL DEFAULT 'My League',
-                        yahoo_league_key CHAR(30),
                         yahoo_league_id CHAR(30),
                         roster_size INTEGER NOT NULL,
                         PRIMARY KEY (league_id) );
 
-CREATE TABLE IF NOT EXISTS Teams ( team_id INTEGER,
+CREATE TABLE IF NOT EXISTS Teams ( team_id INTEGER AUTO_INCREMENT,
                      team_name CHAR(20),
                      PRIMARY KEY (team_id) );
 
-CREATE TABLE IF NOT EXISTS Commissioners ( user_email CHAR(50),
+CREATE TABLE IF NOT EXISTS Commissioners ( username CHAR(50),
                              league_id INTEGER,
-                             PRIMARY KEY (user_email, league_id),
-                             FOREIGN KEY (user_email) REFERENCES Users(email),
+                             PRIMARY KEY (username, league_id),
+                             FOREIGN KEY (username) REFERENCES Users(username),
                              FOREIGN KEY (league_id) REFERENCES Leagues(league_id) );
 
-CREATE TABLE IF NOT EXISTS Plays_with_in ( user_email CHAR(50),
+CREATE TABLE IF NOT EXISTS Plays_with_in ( username CHAR(50),
                              league_id INTEGER,
                              team_id INTEGER,
-                             PRIMARY KEY (user_email, league_id, team_id),
-                             FOREIGN KEY (user_email) REFERENCES Users(email),
+                             PRIMARY KEY (username, league_id, team_id),
+                             FOREIGN KEY (username) REFERENCES Users(username),
                              FOREIGN KEY (league_id) REFERENCES Leagues(league_id),
                              FOREIGN KEY (team_id) REFERENCES Teams(team_id) );
 
 CREATE TABLE IF NOT EXISTS Players ( player_id INTEGER,
-                       full_name CHAR(30) NOT NULL,
+                       first_name CHAR(30) NOT NULL,
+                       last_name CHAR(30) NOT NULL,
                        nfl_team CHAR(20) NOT NULL,
                        PRIMARY KEY (player_id) );
 
@@ -43,34 +45,28 @@ CREATE TABLE IF NOT EXISTS Roster_of ( team_id INTEGER,
                          FOREIGN KEY (team_id) REFERENCES Teams(team_id),
                          FOREIGN KEY (player_id) REFERENCES Players(player_id) );
 
-CREATE TABLE IF NOT EXISTS Positions ( position_id INTEGER,
-                         position_name CHAR(20) NOT NULL,
-                         PRIMARY KEY (position_id) );
+CREATE TABLE IF NOT EXISTS Positions ( position_name CHAR(20) NOT NULL,
+                         PRIMARY KEY (position_name) );
 
 CREATE TABLE IF NOT EXISTS Requires ( league_id INTEGER,
-                       position_id INTEGER,
+                       position_name CHAR(20),
                        minimum INTEGER,
                        maximum INTEGER,
                        starters INTEGER,
-                       PRIMARY KEY (league_id, position_id),
+                       PRIMARY KEY (league_id, position_name),
                        FOREIGN KEY (league_id) REFERENCES Leagues(league_id),
-                       FOREIGN KEY (position_id) REFERENCES Positions(position_id) );
+                       FOREIGN KEY (position_name) REFERENCES Positions(position_name) );
 
 CREATE TABLE IF NOT EXISTS Play ( player_id INTEGER,
-                    position_id INTEGER,
-                    PRIMARY KEY (player_id, position_id),
+                    position_name CHAR(20),
+                    PRIMARY KEY (player_id, position_name),
                     FOREIGN KEY (player_id) REFERENCES Players(player_id),
-                    FOREIGN KEY (position_id) REFERENCES Positions(position_id) );
+                    FOREIGN KEY (position_name) REFERENCES Positions(position_name) );
 
 CREATE TABLE IF NOT EXISTS Stats ( stat_id INTEGER,
-                     yahoo_stat_id INTEGER,
+                     player_id INTEGER,
                      stat_value REAL,
                      stat_name CHAR(20) NOT NULL,
-                     season INTEGER NOT NULL,
-                     PRIMARY KEY (stat_id) );
-
-CREATE TABLE IF NOT EXISTS Have ( player_id INTEGER,
-                    stat_id INTEGER,
-                    PRIMARY KEY (player_id, stat_id),
-                    FOREIGN KEY (player_id) REFERENCES Players(player_id),
-                    FOREIGN KEY (stat_id) REFERENCES Stats(stat_id) );
+                     season INTEGER,
+                     PRIMARY KEY (stat_id, player_id, season),
+                     FOREIGN KEY (player_id) REFERENCES Players(player_id) );

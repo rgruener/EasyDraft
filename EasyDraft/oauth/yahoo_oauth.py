@@ -1,6 +1,7 @@
 import urlparse
 import httplib2
 import time
+import json
 import oauth2 as oauth
 
 # Largely based on sample code for simplegeo's python-oauth2 repository on github
@@ -9,13 +10,13 @@ import oauth2 as oauth
 consumer_key = 'dj0yJmk9SlBOaEx5VjJvRjJMJmQ9WVdrOWIyOVZiMUZpTnpnbWNHbzlNVE0xTURnNE1UVTJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD1hOA--'
 consumer_secret = 'eb800ec46583d123c8df54ac2c28f5d2975c06d9'
 
-nfl_game_key = '257'
+nfl_game_key = '273'
 my_league_id = '840811'
 my_league_key = nfl_game_key + '.l.' + my_league_id
 
-def yahoo_oauth():
+def yahoo_oauth_get_token(callback_url):
 
-    request_token_url = 'https://api.login.yahoo.com/oauth/v2/get_request_token?oauth_callback=http://localhost:5000'
+    request_token_url = 'https://api.login.yahoo.com/oauth/v2/get_request_token?oauth_callback=%s' % callback_url
     access_token_url = 'https://api.login.yahoo.com/oauth/v2/get_token'
     authorize_url = 'https://api.login.yahoo.com/oauth/v2/request_auth'
 
@@ -35,7 +36,10 @@ def yahoo_oauth():
 
     print "Go to the following link in your browser:"
     print "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
-    print 
+
+    redirect = "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
+
+    return (redirect, request_token)
 
     # After the user has granted access to you, the consumer, the provider will
     # redirect you to whatever URL you have told them to redirect to. You can 
@@ -44,6 +48,8 @@ def yahoo_oauth():
     while accepted.lower() == 'n':
         accepted = raw_input('Have you authorized me? (y/n) ')
     oauth_verifier = raw_input('What is the PIN? ')
+
+def yahoo_oauth_access_token(request_token, oauth_verifier):
 
     token = oauth.Token(request_token['oauth_token'],
         request_token['oauth_token_secret'])
@@ -62,14 +68,19 @@ def yahoo_oauth():
     #print "You may now access protected resources using the access tokens above." 
     #print
 
-def yahoo_get_resource(url, oauth_token, oauth_token_secret):
+def yahoo_get_resource(url, oauth_token, oauth_token_secret, extras=None):
+
+    base_url = 'http://fantasysports.yahooapis.com/fantasy/v2/'
 
     params = {
             'format': 'json', 
             'oauth_version': "1.0",
             'oauth_nonce': oauth.generate_nonce(),
-            'oauth_timestamp': int(time.time())
+            'oauth_timestamp': int(time.time()),
     }
+
+    if extras:
+        params = dict(params.items() + extras.items())
 
     token = oauth.Token(key=oauth_token, secret=oauth_token_secret)
     consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
@@ -79,17 +90,16 @@ def yahoo_get_resource(url, oauth_token, oauth_token_secret):
 
     signature_method = oauth.SignatureMethod_HMAC_SHA1()
 
-    oauth_request = oauth.Request.from_consumer_and_token(consumer, token=token, http_method='GET', http_url=url, parameters=params)
+    oauth_request = oauth.Request.from_consumer_and_token(consumer, token=token, http_method='GET', http_url=base_url+url, parameters=params)
     oauth_request.sign_request(signature_method, consumer, token)
-    print 'REQUEST'
-    time.sleep(1)
+    #print 'REQUEST'
     url = oauth_request.to_url()
+    #print url
     resp, content = httplib2.Http.request(oauth.Client(consumer), url, 'GET')
-    print 'GOT'
-    print resp
-    print content
-    time.sleep(1)
+    #print 'GOT'
+    #print resp
+    return resp, json.loads(content)
 
 if __name__ == '__main__':
-    token = yahoo_oauth()
-    yahoo_get_league('', token['oauth_token'], token['oauth_token_secret'])
+    token = yahoo_oauth_get_token('http://localhost:5000')
+    yahoo_get_resource('http://fantasysports.yahooapis.com/fantasy/v2/league/' + my_league_key + '/players', token['oauth_token'], token['oauth_token_secret'])

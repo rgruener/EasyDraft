@@ -1,12 +1,112 @@
 {% macro render_field(field) %}
-  <dt>{{ field.label }}
-  <dd>{{ field(**kwargs)|safe }}
-  {% if field.errors %}
-    <ul class=errors>
-    {% for error in field.errors %}
-      <li>{{ error }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-  </dd>
+    <div class="row">
+        <div class="twelve columns">
+            {% if field.errors %}
+                {% set css_class = 'error' + kwargs.pop('class', '') %}
+                <dt>{{ field.label(class=css_class) }}
+                <dd>{{ field(class=css_class, **kwargs)|safe }}
+                <small class=error>
+                    {% for error in field.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </small>
+            {% else %} 
+                <dt>{{ field.label() }}
+                <dd>{{ field(**kwargs)|safe }}
+            {% endif %}
+            </dd>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro render_field_inline(field, col_1, col_2) %}
+    {% if field.errors %}
+        {% set css_class = 'error inline' + kwargs.pop('class', '') %}
+        <div class="row">
+            <div class="{{col_1}} columns">
+                <dt>{{ field.label(class=css_class) }}
+            </div>
+            <div class="{{col_2}} columns">
+                <dd>{{ field(class=css_class, **kwargs)|safe }}
+                <small class=error>
+                {% for error in field.errors %}
+                    {{ error }}
+                {% endfor %}
+                </small>
+            </div>
+        </div>
+    {% else %} 
+        <div class="row">
+            <div class="{{col_1}} columns">
+                <dt>{{ field.label(class='inline') }}
+            </div>
+            <div class="{{col_2}} columns">
+                <dd>{{ field(**kwargs)|safe }}
+            </div>
+        </div>
+    {% endif %}
+    </dd>
+{% endmacro %}
+
+{% macro render_2_fields_inline(field1, field2, placeholder1, placeholder2) %}
+    {% if field1.errors or field2.errors %}
+        {% if field1.errors %}
+            {% set css_class1 = 'error inline' + kwargs.pop('class', '') %}
+        {% endif %}
+        {% if field2.errors %}
+            {% set css_class2 = 'error inline' + kwargs.pop('class', '') %}
+        {% endif %}
+        <div class="row">
+            <div class="two columns">
+                <dt>{{ field1.label(class=css_class1 or css_class2) }}
+            </div>
+            <div class="five columns">
+                <dd>{{ field1(class=css_class1, placeholder=placeholder1, **kwargs)|safe }}
+                {% if field1.errors %}
+                    <small class=error>
+                    {% for error in field1.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    </small>
+                {% endif %}
+            </div>
+            <div class="five columns">
+                <dd>{{ field2(class=css_class2, placeholder=placeholder2, **kwargs)|safe }}
+                {% if field2.errors %}
+                    <small class=error>
+                    {% for error in field2.errors %}
+                        {{ error }}
+                    {% endfor %}
+                    </small>
+                {% endif %}
+            </div>
+        </div>
+    {% else %} 
+        <div class="row">
+            <div class="two columns">
+                <dt>{{ field1.label(class='inline') }}
+            </div>
+            <div class="five columns">
+                <dd>{{ field1(placeholder=placeholder1, **kwargs)|safe }}
+            </div>
+            <div class="five columns">
+                <dd>{{ field2(placeholder=placeholder2, **kwargs)|safe }}
+            </div>
+        </div>
+    {% endif %}
+    </dd>
+{% endmacro %}
+
+{% macro render_requirement(field1, field2) %}
+    <div class="row">
+        <div class="four columns">
+            <dt>{{ field1.label(class='inline') }}
+        </div>
+        <div class="four columns">
+            <dd>{{ field1(**kwargs)|safe }}</dd>
+        </div>
+        <div class="four columns">
+            <dd>{{ field2(**kwargs)|safe }}</dd>
+        </div>
+    </div>
 {% endmacro %}

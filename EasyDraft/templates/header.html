@@ -2,30 +2,20 @@
     <div class="container">
 		<div class="row">
 			<div class="four columns">
-				<a href="/">
+                <a href="{{ url_for('index') }}">
                     <img id="logo" src="{{ url_for('static', filename='images/logo.png') }}" \>
 				</a>
 			</div>
             <div class="five columns">
-                <div id="labs">
-                    <i>Brought to you by <a href="http://labs.pontiflex.com">Pontiflex Labs</a></i>
-                </div>
 			</div>
             <div class="three columns">
                 <div id="login" style="text-align:right;">
                     {% if not current_user.is_authenticated() %}
-                        {% if next %} 
-                            <a href="/accounts/login/?next={{ next }}" class="medium secondary button">Login</a>
-                        {% else %}
-                            <a href="/accounts/login/?next={{ request.path }}" class="medium secondary button">Login</a>
-                        {% endif %}
+                        <a href="{{ url_for('login', next=request.args.get('next') or request.path or None) }}" class="medium secondary button">Login</a>
+                        <i><h5 style="margin-top:6px; font-size:15px; color:#fff;">Don't Have An Account?<br/><a href="{{ url_for('register',next=request.path) }}" style="color:#5CF">Create One</a></h5></i>
                     {% else %}
                         <a href="#" class="medium secondary button" data-reveal-id="myAccountModal">My Account</a>
-                        {% if request.path %}
-                            <i><h5 style="margin-top:6px;">Not {{ current_user.email }}? <a href="/accounts/logout/?next={{ request.path }}">Logout</a></h5></i>
-                        {% else %}
-                            <i><h5 style="margin-top:6px;">Not {{ current_user.email }}? <a href="/accounts/logout/?next=/accounts/login/?next=/">Logout</a></h5></i>
-                        {% endif %}
+                        <i><h5 style="margin-top:6px; color:#fff;">Not {{ current_user.username }}? <a href="{{ url_for('logout', next=request.path or '/') }}" style="color:#5CF">Logout</a></h5></i>
                     {% endif %}
                 </div>
             </div>

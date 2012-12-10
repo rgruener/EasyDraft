@@ -11,8 +11,12 @@
         <div class="six columns">
             {% if not current_user.is_authenticated() %}
                 {% from "_formhelpers.html" import render_field %}
+                {% if username_error %}
+                    <p class="error">Sorry, that username is not available</p>
+                {% endif %}
                 <form action="" method="post">{{ form.csrf_token }}
                     <dl>
+                        {{ render_field(form.username) }}
                         {{ render_field(form.email) }}
                         {{ render_field(form.password) }}
                         {{ render_field(form.confirm) }}
