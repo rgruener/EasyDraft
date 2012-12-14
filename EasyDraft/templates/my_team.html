@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    <div class="row">
+        <div class="twelve columns">
+            <h2>{{ team[1] }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <table class="twelve">
+                <thead>
+                    <tr>
+                        <th style="text-align:center;">Player Name</th>
+                        <th style="text-align:center;">Position</th>
+                        <th style="text-align:center;">NFL Team</th>
+                    </tr>
+                </thead>
+                {% for player in players %}
+                    <tr>
+                        <td>{{ player.first_name }} {{ player.last_name }}</td>
+                        <td>{{ player.position }}</td>
+                        <td>{{ player.nfl_team }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

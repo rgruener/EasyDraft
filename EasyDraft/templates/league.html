@@ -30,7 +30,7 @@
                 </thead>
                 {% for team in teams %}
                 <tr>
-                    <td><a href="{{ url_for('get_team', team_id=team[0]) }}">{{ team[1] }}</a></td>
+                    <td><a href="{{ url_for('get_team', team_id=team[0], league_id=league[0]) }}">{{ team[1] }}</a></td>
                     <td>{{ team[2] }}</td>
                 </tr>
                 {% endfor %}

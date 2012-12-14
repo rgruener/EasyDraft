@@ -108,7 +108,10 @@ def get_yahoo_token(token=None):
 def yahoo_oauth():
     if 'yahoo_token' in session.keys():
         del session['yahoo_token']
-    return yahoo.authorize(callback=url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None))
+    try:
+        return yahoo.authorize(callback=url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None))
+    except:
+        return redirect(url_for('index'))
 
 @app.route('/oauth/authorized')
 @yahoo.authorized_handler
@@ -169,7 +172,7 @@ def update_all_players(i=0, stat_map=None):
             for stat in players[key]['player'][1]['player_stats']['stats']:
                 stats.append(stat['stat'])
             database.insert_player(player_id, first_name, last_name, nfl_team)
-            print "Inserted", players[key]['player'][0][2]['name']['full']
+            print "Inserted", player_id, first_name, last_name, nfl_team
             for p in pos:
                 database.insert_position(player_id, p)
             for stat in stats:
@@ -185,14 +188,20 @@ def update_all_players(i=0, stat_map=None):
 @login_required
 def my_leagues():
     leagues = database.my_leagues(current_user.get_id())
-    print leagues
     return render_template('my_leagues.html', leagues=leagues)
 
 @app.route("/teams/get_team")
 @login_required
 def get_team():
-    leagues = database.my_leagues(current_user.get_id())
-    return render_template('my_leagues.html', leagues=leagues)
+    league_id = request.args.get('league_id')
+    team_id = request.args.get('team_id')
+    valid = database.user_in_league(current_user.get_id(), league_id)
+    print valid
+    if not valid:
+        return redirect(url_for('index'))
+    team = database.get_team(team_id)
+    players = database.get_team_players(team_id)
+    return render_template('my_team.html', players=players, team=team)
 
 @app.route("/league/get_league")
 @login_required
@@ -204,6 +213,16 @@ def get_league():
     league = database.get_league(league_id)
     teams = database.get_league_teams(league_id)
     return render_template('league.html', league=league, teams=teams)
+
+@app.route("/league/draft/success")
+@login_required
+def draft_success():
+    league_id = request.args.get('league_id')
+    valid = database.user_in_league(current_user.get_id(), league_id)
+    if not valid:
+        return redirect(url_for('index'))
+    league = database.get_league(league_id)
+    return render_template('draft_success.html', league=league)
 
 @app.route("/user/new_league", methods=["GET", "POST"])
 def new_league():
@@ -261,15 +280,17 @@ def draft_day():
     teams = database.get_league_teams(draft['league_id'])
     draft['current_team'] = int(request.args.get('current_team') or 0)
     draft['direction'] = int(request.args.get('direction') or 1)
-    print draft['current_team']
-    if request.args.get('pick') != '0':
+    print teams, draft['current_team'], draft['direction']
+    if request.args.get('pick') != '0' and request.args.get('pick') is not None:
+        print "Made Pick"
         pick_id = request.args.get('pick')
         database.insert_pick(teams[draft['current_team']][0], pick_id)
-        num_picks = database.get_total_draft(draft['league_id'])
-        total_picks = database,get_league(draft['league_id'])[2]
+        num_picks = database.get_total_draft(draft['league_id'])[0]
+        total_picks = int(database.get_league(draft['league_id'])[2]) * len(teams)
+        print num_picks, total_picks
         if num_picks >= total_picks:
-            database(complete_draft(draft['league_id']))
-            return redirect(url_for('get_league', league_id=draft['league_id']))
+            database.complete_draft(draft['league_id'])
+            return redirect(url_for('draft_success', league_id=draft['league_id']))
         if draft['current_team'] == len(teams)-1 and draft['direction'] == 1:
             draft['direction'] = draft['direction'] * -1
         elif draft['current_team'] == 0 and draft['direction'] == -1:

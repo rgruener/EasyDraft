@@ -20,7 +20,7 @@
                 {% for league in leagues %}
                 <tr>
                     <td><a href="{{ url_for('get_league', league_id=league[0]) }}">{{ league[1] }}</a></td>
-                    <td><a href="{{ url_for('get_team', team_id=league[4]) }}">{{ league[2] }}</a></td>
+                    <td><a href="{{ url_for('get_team', team_id=league[4], league_id=league[0]) }}">{{ league[2] }}</a></td>
                     {% if league[3] %}
                         <td>Drafted</td>
                     {% else %}

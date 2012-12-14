@@ -13,6 +13,7 @@ class Database():
         query = """SELECT username, email, password FROM Users WHERE is_active = True"""
         cursor.execute(query)
         rows = cursor.fetchall()
+        cursor.close()
         users = []
         for row in rows:
             users.append(User(row[0], row[1], row[2]))
@@ -125,7 +126,7 @@ class Database():
         return Player(p[0], p[1], p[2], p[3])
 
     def insert_player(self, player_id, first_name, last_name, nfl_team):
-        if (not (player_id and first_name and last_name and nfl_team)):
+        if (not (player_id and first_name and nfl_team)):
             return None
         self.mysql.before_request()
         cursor = self.mysql.get_db().cursor()
@@ -134,10 +135,10 @@ class Database():
         try:
             cursor.execute(statement)
             self.mysql.get_db().commit()
-        except:
-            pass
-        cursor.close()
-        #self.mysql.get_db().close()
+            cursor.close()
+            self.mysql.get_db().close()
+        except Exception, e:
+            print e
         return Player(player_id, first_name, last_name, nfl_team)
 
     def update_player(self, player_id, first_name=None, last_name=None, nfl_team=None):
@@ -227,7 +228,7 @@ class Database():
             return None
         self.mysql.before_request()
         cursor = self.mysql.get_db().cursor()
-        query = """UPDATE League SET drafted=True WHERE league_id=%s""" % (league_id)
+        query = """UPDATE Leagues SET drafted=True WHERE league_id=%s""" % (league_id)
         cursor.execute(query)
         cursor.close()
         self.mysql.get_db().commit()
@@ -250,10 +251,10 @@ class Database():
         try:
             cursor.execute(statement)
             self.mysql.get_db().commit()
+            cursor.close()
+            self.mysql.get_db().close()
         except Exception, e:
             pass
-        cursor.close()
-        #self.mysql.get_db().close()
         return position_name
 
     def insert_stat(self, stat_id, player_id, stat_value, stat_name, season=2012):
@@ -266,10 +267,10 @@ class Database():
         try:
             cursor.execute(statement)
             self.mysql.get_db().commit()
+            cursor.close()
+            self.mysql.get_db().close()
         except Exception, e:
             pass
-        cursor.close()
-        #self.mysql.get_db().close()
         return (stat_id, player_id, stat_value, stat_name, season)
         
     def insert_league(self, league_name, yahoo_league_id, roster_size):
@@ -354,6 +355,17 @@ class Database():
         teams = cursor.fetchall()
         cursor.close()
         return teams
+
+    def get_team(self, team_id):
+        if not team_id:
+            return None
+        self.mysql.before_request()
+        cursor = self.mysql.get_db().cursor()
+        query = """SELECT T.team_id, T.team_name from Teams T WHERE T.team_id=%s""" % (team_id)
+        cursor.execute(query)
+        team = cursor.fetchone()
+        cursor.close()
+        return team
 
     def get_team_players(self, team_id):
         if not team_id:

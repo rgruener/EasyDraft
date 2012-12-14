@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    {% if league %}
+        <div class="row">
+            <div class="twelve columns">
+                <h2>You Have Successfully Drafted For {{ league[1] }}</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns">
+                    <h4>You may view your draft results by going to <a href="{{ url_for('get_league', league_id=league[0]) }}">your league page.</a></h4>
+            </div>
+        </div>
+    {% else %}
+    <div class="row">
+        <div class="twelve columns">
+            <h2>You Do Not Have Access To This Page</h2>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
