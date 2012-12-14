@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    <div class="row">
+        <div class="twelve columns">
+            <h2>League: {{ league[1] }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <div class="row">
+                {% if not league[3] %}
+                    <div class="five columns">
+                        <h3>Draft Status: Not Yet Drafted </h3>
+                    </div>
+                    <div class="seven columns">
+                        <a href="{{ url_for('draft_setup', league_id=league[0]) }}" class="button">Start Your League Draft Now</a>
+                    </div>
+                {% else %}
+                    <h3>Draft Status: Drafted</h3>
+                {% endif %}
+            </div>
+            <table class="twelve">
+                <thead>
+                    <tr>
+                        <th style="text-align:center;">Team Name</th>
+                        <th style="text-align:center;">User</th>
+                    </tr>
+                </thead>
+                {% for team in teams %}
+                <tr>
+                    <td><a href="{{ url_for('get_team', team_id=team[0]) }}">{{ team[1] }}</a></td>
+                    <td>{{ team[2] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

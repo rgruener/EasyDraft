@@ -34,8 +34,9 @@ class Team():
 
 class Player():
 
-    def __init__(self, player_id, first_name, last_name, nfl_team):
+    def __init__(self, player_id, first_name, last_name, nfl_team, position=None):
         self.player_id = player_id
         self.first_name = first_name
         self.last_name = last_name
         self.nfl_team = nfl_team
+        self.position = position

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    {% if league_name and league_id and current_user.is_authenticated() %}
+        <div class="row">
+            <div class="twelve columns">
+                <h2>You Have Successfully Created {{ league_name }}</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns">
+                    <h4>You may continue by <a href="{{ url_for('draft_setup', league_id=league_id) }}">drafting now</a> or you may return to draft later
+                        by going to <a href="{{ url_for('my_leagues') }}">My Leagues</a></h4>
+            </div>
+        </div>
+    {% else %}
+    <div class="row">
+        <div class="twelve columns">
+            <h2>You Do Not Have Access To This Page</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <h4>If you want to create a new league login and go to <a href="{{ url_for('new_league') }}">Start a New League</a></h4>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

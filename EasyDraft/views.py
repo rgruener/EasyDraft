@@ -1,7 +1,9 @@
 from EasyDraft import app, database, login_manager, yahoo
 from flask import g, render_template, redirect, request, url_for, flash, session
 from flask.ext.login import LoginManager, current_user, login_required, login_user, logout_user
-from forms import LoginForm, RegistrationForm, ChangePassForm, NewLeagueForm, LeagueRequirementsForm
+from forms import LoginForm, RegistrationForm, ChangePassForm, NewLeagueForm, LeagueRequirementsForm, \
+                    DraftSetupForm, DraftSearchForm
+from process_forms import process_league_form
 from EasyDraft.oauth.yahoo_oauth import yahoo_get_resource
 import hashlib
 
@@ -179,9 +181,29 @@ def update_all_players(i=0, stat_map=None):
     else:
         return update_all_players(i+25, stat_map)
     
-@app.route("/user/teams")
-def my_teams():
-    pass
+@app.route("/user/leagues")
+@login_required
+def my_leagues():
+    leagues = database.my_leagues(current_user.get_id())
+    print leagues
+    return render_template('my_leagues.html', leagues=leagues)
+
+@app.route("/teams/get_team")
+@login_required
+def get_team():
+    leagues = database.my_leagues(current_user.get_id())
+    return render_template('my_leagues.html', leagues=leagues)
+
+@app.route("/league/get_league")
+@login_required
+def get_league():
+    league_id = request.args.get('league_id')
+    valid = database.user_in_league(current_user.get_id(), league_id)
+    if not valid:
+        return redirect(url_for('index'))
+    league = database.get_league(league_id)
+    teams = database.get_league_teams(league_id)
+    return render_template('league.html', league=league, teams=teams)
 
 @app.route("/user/new_league", methods=["GET", "POST"])
 def new_league():
@@ -202,7 +224,69 @@ def new_league_setup():
     yahoo_league_id = request.args.get('yahoo_league_id')
     form = LeagueRequirementsForm()
     if request.method == 'POST' and form.validate():
-        print "Got Form"
-    else:
-        print "Not Valid"
+        league_id = process_league_form(league_name, yahoo_league_id, form)
+        return redirect(url_for('new_league_success', league_name=league_name, league_id=league_id))
     return render_template("new_league_setup.html", league_name=league_name, form=form)
+
+@app.route("/user/new_league/success")
+def new_league_success():
+    return render_template("new_league_success.html", league_name=request.args.get('league_name'), \
+                            league_id=request.args.get('league_id'))
+
+@app.route("/league/draft/setup", methods=["GET", "POST"])
+@login_required
+def draft_setup():
+    league_id = request.args.get('league_id')
+    valid = database.user_in_league(current_user.get_id(), league_id)
+    if not valid:
+        return redirect(url_for('index'))
+    form = DraftSetupForm()
+    league = database.get_league(league_id)
+    if request.method =='POST' and form.validate():
+        return redirect(url_for('draft_day', time=form.draft_time.data, league_id=league_id, \
+                order=form.draft_order.data, selection=form.draft_positions.data))
+    return render_template("draft_setup.html", form=form, league=league)
+
+@app.route("/league/draft_day", methods=["GET", "POST"])
+@login_required
+def draft_day():
+    draft = dict()
+    draft['league_id'] = request.args.get('league_id')
+    draft['time'] = request.args.get('time')
+    draft['order'] = request.args.get('order')
+    draft['selection'] = request.args.get('selection')
+    valid = database.user_in_league(current_user.get_id(), draft['league_id'])
+    if not valid or not draft['league_id'] or not draft['time']:
+        return redirect(url_for('index'))
+    teams = database.get_league_teams(draft['league_id'])
+    draft['current_team'] = int(request.args.get('current_team') or 0)
+    draft['direction'] = int(request.args.get('direction') or 1)
+    print draft['current_team']
+    if request.args.get('pick') != '0':
+        pick_id = request.args.get('pick')
+        database.insert_pick(teams[draft['current_team']][0], pick_id)
+        num_picks = database.get_total_draft(draft['league_id'])
+        total_picks = database,get_league(draft['league_id'])[2]
+        if num_picks >= total_picks:
+            database(complete_draft(draft['league_id']))
+            return redirect(url_for('get_league', league_id=draft['league_id']))
+        if draft['current_team'] == len(teams)-1 and draft['direction'] == 1:
+            draft['direction'] = draft['direction'] * -1
+        elif draft['current_team'] == 0 and draft['direction'] == -1:
+            draft['direction'] = draft['direction'] * -1
+        else:
+            draft['current_team'] = draft['current_team'] + draft['direction']
+    position = request.args.get('position')
+    nfl_team = request.args.get('nfl_team')
+    player_name = request.args.get('player')
+    order_by = request.args.get('sort')
+    limit = request.args.get('max_return')
+    if not order_by:
+        order_by = 'last_name'
+    if not limit:
+        limit = '200'
+    players = database.get_players_draft(draft['league_id'], order_by=order_by, position=position, nfl_team=nfl_team, last_name=player_name, limit=limit)
+    team_players = database.get_team_players(teams[draft['current_team']][0])
+    search = DraftSearchForm()
+    return render_template("draft_day.html", draft=draft, players=players, search=search, team=teams[draft['current_team']], team_players=team_players)
+

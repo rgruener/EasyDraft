@@ -1,5 +1,6 @@
 from flask.ext.wtf import (Form, BooleanField, TextField, PasswordField, IntegerField, 
-                            SelectField, validators)
+                            SelectField, validators, HiddenField)
+from flask.ext.login import current_user
 from EasyDraft import database
 
 class RegistrationForm(Form):
@@ -47,6 +48,10 @@ def validate_user(form, field):
     if (field.data and not database.get_user(field.data)):
         raise validators.ValidationError('No such Username Exists')
 
+def validate_first_user(form, field):
+    if (current_user.get_id() != field.data):
+        raise validators.ValidationError('You must be the user for Team 1')
+
 class LeagueRequirementsForm(Form):
     roster_size = SelectField('Total Roster Size', choices=get_choices(1,25))
     num_teams = SelectField('Number of Teams', choices=get_choices(2, 16))
@@ -59,7 +64,7 @@ class LeagueRequirementsForm(Form):
     num_te = SelectField(choices=get_choices(0,4))
     start_te = SelectField('TE', choices=get_choices(0,2))
     num_k = SelectField(choices=get_choices(0,3))
-    start_k = SelectField('TE', choices=get_choices(0,2))
+    start_k = SelectField('K', choices=get_choices(0,2))
     num_def = SelectField(choices=get_choices(0,3))
     start_def = SelectField('DEF', choices=get_choices(0,2))
     team_1 = TextField('Team 1', [validate_team])
@@ -78,7 +83,7 @@ class LeagueRequirementsForm(Form):
     team_14 = TextField('Team 14', [validate_team])
     team_15 = TextField('Team 15', [validate_team])
     team_16 = TextField('Team 16', [validate_team])
-    team_1_user = TextField(validators=[validate_user])
+    team_1_user = TextField(validators=[validate_first_user])
     team_2_user = TextField(validators=[validate_user])
     team_3_user = TextField(validators=[validate_user])
     team_4_user = TextField(validators=[validate_user])
@@ -94,3 +99,26 @@ class LeagueRequirementsForm(Form):
     team_14_user = TextField(validators=[validate_user])
     team_15_user = TextField(validators=[validate_user])
     team_16_user = TextField(validators=[validate_user])
+
+class DraftSetupForm(Form):
+    draft_time = SelectField('Draft Selection Time', choices=[('1','1:00'),('1.5','1:30'),('2','2:00'),\
+                                                        ('2.5','2:30'),('3','3:00'),('3.5','3:30'),('4','4:00')])
+    draft_positions = SelectField('Team Draft Positions', choices=[('0','Random')])
+    draft_order = SelectField('Draft Selection Order', choices=[('0','Snake')])
+
+class DraftSearchForm(Form):
+    player = TextField('Player Last Name:')
+    position = SelectField('Position:', choices=[('','---'),('QB','QB'),('RB','RB'),\
+                            ('WR','WR'),('TE','TE'),('K','K'),('DEF','DEF')])
+    nfl_team = TextField('NFL Team Abbreviation:')
+    sort = SelectField('Sort On:', choices=[('','----------'),('last_name','Name'),('position_name','Position'),\
+                                            ('nfl_team','NFL Team')])
+    max_return = SelectField('Number of Players:', choices=[('25','25'),('50','50'),('100','100'),\
+                                                            ('200','200'),('500','500')])
+    time = HiddenField()
+    league_id = HiddenField()
+    order = HiddenField()
+    selection = HiddenField()
+    current_team = HiddenField()
+    direction = HiddenField()
+    pick = HiddenField()

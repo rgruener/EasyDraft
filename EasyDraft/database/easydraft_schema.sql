@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS Leagues (  league_id INTEGER AUTO_INCREMENT,
                         league_name CHAR(20) NOT NULL DEFAULT 'My League',
                         yahoo_league_id CHAR(30),
                         roster_size INTEGER NOT NULL,
+                        drafted BOOLEAN DEFAULT False,
                         PRIMARY KEY (league_id) );
 
 CREATE TABLE IF NOT EXISTS Teams ( team_id INTEGER AUTO_INCREMENT,
@@ -50,7 +51,6 @@ CREATE TABLE IF NOT EXISTS Positions ( position_name CHAR(20) NOT NULL,
 
 CREATE TABLE IF NOT EXISTS Requires ( league_id INTEGER,
                        position_name CHAR(20),
-                       minimum INTEGER,
                        maximum INTEGER,
                        starters INTEGER,
                        PRIMARY KEY (league_id, position_name),

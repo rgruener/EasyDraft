@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    <div class="row">
+        <div class="twelve columns">
+            <h2>Draft Setup For {{ league[1] }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="twelve columns">
+            <div class="row">
+                <div class="six columns">
+                    <h3>League Draft Options</h3>
+                    {% from "_formhelpers.html" import render_field, render_field_inline, render_requirement, render_2_fields_inline %}
+                    <form action="" method="post" class="custom">{{ form.csrf_token }}
+                        {{ render_field_inline(form.draft_time, 'four', 'eight') }}
+                        {{ render_field_inline(form.draft_positions, 'four', 'eight') }}
+                        {{ render_field_inline(form.draft_order, 'four', 'eight') }}
+                        <input type="submit" value="Start Draft" class="medium button" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

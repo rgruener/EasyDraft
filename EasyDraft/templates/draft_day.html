@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block javascripts %}
+    <script src="{{ url_for('static', filename='javascripts/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/modernizr.foundation.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/foundation.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/jquery.foundation.tabs.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/processing-1.3.6.min.js') }}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script src="http://gsgd.co.uk/sandbox/jquery/easing/jquery.easing.1.3.js"></script>
+
+    <script>
+    </script>
+    <script type="text/javascript">
+    // set minutes
+    var mins = {{ draft['time'] }};
+
+    // calculate the seconds (don't change this! unless time progresses at a different speed for you...)
+    var secs = mins * 60;
+    function countdown() {
+        setTimeout('Decrement()',1000);
+    }
+    function Decrement() {
+        if (document.getElementById) {
+            minutes = document.getElementById("minutes");
+            seconds = document.getElementById("seconds");
+            // if less than a minute remaining
+            if (seconds < 59) {
+                seconds.value = secs;
+            } else {
+                minutes.value = getminutes();
+                seconds.value = getseconds();
+            }
+            secs--;
+            setTimeout('Decrement()',1000);
+            if (secs <= 0){
+                alert('You Have Run Out Of Time');
+                secs = mins * 60;
+            }
+        }
+    }
+    function getminutes() {
+        // minutes is seconds divided by 60, rounded down
+        mins = Math.floor(secs / 60);
+        return mins;
+    }
+    function getseconds() {
+        // take mins remaining (as seconds) away from total seconds remaining
+        return secs-Math.round(mins *60);
+    }
+
+    function makePick(player_id) {
+        document.getElementById('draft_pick').value=player_id;
+        document.getElementById('submit').click();
+    }
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% include "navigation.html" %}
+    <div class="row">
+        <div class="twelve columns">
+            <h2>Fantasy Draft For {{ league_name }}</h3>
+            <div class="row">
+                <div class="eight columns">
+                    <h3>Available Players</h3>
+                    <div class="row">
+                        <div class="eight columns">
+                        {% from "_formhelpers.html" import render_field, render_field_inline, render_requirement, render_2_fields_inline %}
+                        <form action="" method="get" class="custom">{{ search.csrf_token }}
+                            <fieldset style="padding:12px;margin-bottom:10px">
+                                <legend>Player Search</legend>
+                                {{ render_field_inline(search.sort, 'six', 'six') }}
+                                {{ render_field_inline(search.position, 'six', 'six') }}
+                                {{ render_field_inline(search.player, 'six', 'six') }}
+                                {{ render_field_inline(search.nfl_team, 'six', 'six') }}
+                                {{ render_field_inline(search.max_return, 'six', 'six') }}
+                                {{ search.league_id(value=request.args.get('league_id')) }}
+                                {{ search.time(value=request.args.get('time')) }}
+                                {{ search.order(value=request.args.get('order')) }}
+                                {{ search.selection(value=request.args.get('selection')) }}
+                                {{ search.current_team(value=draft['current_team']) }}
+                                {{ search.direction(value=draft['direction']) }}
+                                {{ search.pick(id='draft_pick', value='0') }}
+                            <input id="submit" type="submit" value="Search" class="medium button" />
+                            </fieldset>
+                        </form>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align:center;">Player Name</th>
+                                <th style="text-align:center;">Position</th>
+                                <th style="text-align:center;">NFL Team</th>
+                                <th style="text-align:center;">Select Pick</th>
+                            </tr>
+                        </thead>
+                        {% for player in players %}
+                        <tr>
+                            <td>{{ player.first_name }} {{ player.last_name }}</td>
+                            <td>{{ player.position }}</td>
+                            <td>{{ player.nfl_team }}</td>
+                            <td><a class="button small" onclick="makePick('{{ player.player_id }}')">Select Player</a></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div class="four columns">
+                    <div class="row">
+                        <h3>On The Clock: {{ team[1] }}</h3>
+                        <div class="six columns">
+                            <h3>Time Left:</h3>
+                        </div>
+                        <div class="two columns">
+                            <input id="minutes" type="text" style="width:34px;height:45px;border:none;background-color:none;font-size:16px;font-weight:bold;">
+                        </div>
+                        <div class="one column">
+                            <h4>:</h4>
+                        </div>
+                        <div class="two columns">
+                            <input id="seconds" type="text" style="width:52px;height:45px;border:none;background-color:none;font-size:16px;font-weight:bold;margin-left:-30px">
+                    </div>
+                    <div class="row">
+                        <h3>{{ team[1] }}'s Current Team</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;">Player Name</th>
+                                    <th style="text-align:center;">Position</th>
+                                    <th style="text-align:center;">NFL Team</th>
+                                </tr>
+                            </thead>
+                            {% for player in team_players %}
+                            <tr>
+                                <td>{{ player.first_name }} {{ player.last_name }}</td>
+                                <td>{{ player.position }}</td>
+                                <td>{{ player.nfl_team }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+countdown();
+</script>
+{% endblock %}
+

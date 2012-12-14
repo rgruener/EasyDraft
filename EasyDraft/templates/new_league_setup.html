@@ -26,7 +26,7 @@
                                             <h5>EasyDraft Username</h5>
                                         </div>
                                     </div>
-                                    {{ render_2_fields_inline(form.team_1, form.team_1_user, '', 'Optional') }}
+                                    {{ render_2_fields_inline(form.team_1, form.team_1_user, '', current_user.get_id()) }}
                                     {{ render_2_fields_inline(form.team_2, form.team_2_user, '', 'Optional') }}
                                     {{ render_2_fields_inline(form.team_3, form.team_3_user, '', 'Optional') }}
                                     {{ render_2_fields_inline(form.team_4, form.team_4_user, '', 'Optional') }}
